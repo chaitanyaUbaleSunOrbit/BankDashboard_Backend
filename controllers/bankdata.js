@@ -1,4 +1,13 @@
-const {addUserRole, saveUser,getAllUsers, loginUser, getBankData,getFD1Balance} =require("../models/bankdata");
+const {addUserRole,
+     saveUser,
+    getAllUsers, 
+    loginUser, 
+    getBankData,
+    getFD1Balance,
+    getFinanceLedgerRecords,
+    getFD2Balance,
+    getAccountHistory
+} =require("../models/bankdata");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -89,6 +98,26 @@ async function loginUserController(req,res){
     }
 }
 
+async function getAccountHistoryController(req,res){
+    
+    try{
+      const  {buId}=req.body;
+      if(!buId){
+        console.log("BuId required");
+        res.status(400).json({msg:"All Fields are required"});
+
+      }
+      const result=  await getAccountHistory(buId);
+         return res.status(200).json({msg:"success",data:result})
+
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send({msg:"Internal Server Error"})
+        
+    }
+}
+
 async function getFD1BalanceController(req,res){
      try{
        const result = await getFD1Balance();
@@ -101,8 +130,38 @@ async function getFD1BalanceController(req,res){
      }
      catch(err){
         console.log("error",err);
-        res.status(401).json({msg:"Internal server error"})
+        res.status(500).json({msg:"Internal server error"})
      }
+}
+
+async function getFD2BalanceController(req,res){
+    try{
+       const result = await getFD2Balance();
+       if(!result){
+        console.log("not found");
+        return res.status(400).json({msg:"not found"})
+       }
+       return res.status(200).json({msg:"success",data:result})
+    }
+    catch(err){
+        console.log("error",err);
+        res.status(500).json({msg:"internal server error"})
+    }
+}
+
+async function getFinanceLedgerRecordsController(req,res){
+    try{
+       const result = await getFinanceLedgerRecords()
+       if(!result){
+        console.log("Finance ledger records not found");
+        res.status(404).json({msg:"not found"})
+       }
+       else res.status(200).json({msg:"success",data:result})
+    }
+    catch(err){
+        console.log("error:",err)
+        return res.status(400).json({msg:"Internal Server Error"})
+    }
 }
 
 
@@ -112,7 +171,10 @@ module.exports = {
     loginUserController,
     getAllUsersController,
     getBankDataController,
-    getFD1BalanceController
+    getFD1BalanceController,
+    getFinanceLedgerRecordsController,
+    getFD2BalanceController,
+    getAccountHistoryController
 };
 
 // async function holdUser(req,res){         //// Correction Needed

@@ -8,18 +8,23 @@ const config = {
     database: 'BANKDATA_TEST',
         options: {
             encrypt: true, 
-            trustServerCertificate: true 
+            trustServerCertificate: true,
+            instancename:"VJSERVER",
+            enableArithAbort: true
         }  
 };
 
 
-sql.connect(config).then(pool => {
-    return pool.query('SELECT * FROM Users_New');
-}).then(result => {
-    console.dir(result);
-}).catch(err => {
-    console.error('Error:', err);
-});
+
+
+
+// sql.connect(config).then(pool => {
+//     // return pool.query('SELECT * FROM Users_New');
+// }).then(result => {
+//     console.dir(result);
+// }).catch(err => {
+//     console.error('Error:', err);
+// });
 
 
 module.exports=config;
