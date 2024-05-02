@@ -1,21 +1,20 @@
 
-const sql = require('mssql');
 const config = {
     user: 'sa',
     password: 'farvision@123',
     server: '103.129.97.217',
-    // port:5000,
     database: 'BANKDATA_TEST',
         options: {
-            encrypt: true, 
+            encrypt: false, 
             trustServerCertificate: true,
             instancename:"VJSERVER",
-            enableArithAbort: true
+            enableArithAbort: true,
+            trustedConnection:false,
         }  
 };
 
 
-
+module.exports=config;
 
 
 // sql.connect(config).then(pool => {
@@ -26,5 +25,3 @@ const config = {
 //     console.error('Error:', err);
 // });
 
-
-module.exports=config;

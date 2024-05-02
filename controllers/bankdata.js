@@ -4,12 +4,14 @@ const {addUserRole,
     loginUser, 
     getBankData,
     getFD1Balance,
-    getFinanceLedgerRecords,
+    // getFinanceLedgerRecords,
     getFD2Balance,
     getAccountHistory
 } =require("../models/bankdata");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {database} = require("../index");
+
 
 const secretKey ="secretKey";
 
@@ -18,7 +20,7 @@ async function getAllUsersController(req,res) {
     try{
         const user=await getAllUsers();
         const token = jwt.sign({ userId: user.Id }, secretKey, { expiresIn: '1h' });
-        res.status(200).json({msg:"success", data:user,token:token})
+        res.status(200).json({msg:"success", data:user,token:token,database:database})
 
 
     }
@@ -149,20 +151,21 @@ async function getFD2BalanceController(req,res){
     }
 }
 
-async function getFinanceLedgerRecordsController(req,res){
-    try{
-       const result = await getFinanceLedgerRecords()
-       if(!result){
-        console.log("Finance ledger records not found");
-        res.status(404).json({msg:"not found"})
-       }
-       else res.status(200).json({msg:"success",data:result})
-    }
-    catch(err){
-        console.log("error:",err)
-        return res.status(400).json({msg:"Internal Server Error"})
-    }
-}
+// async function getFinanceLedgerRecordsController(req,res){
+//     try{
+//        const result = await getFinanceLedgerRecords()
+//        console.log(result)
+//        if(!result){
+//         console.log("Finance ledger records not found");
+//         res.status(404).json({msg:"not found"})
+//        }
+//        else res.status(200).json({msg:"success",data:result})
+//     }
+//     catch(err){
+//         console.log("error:",err)
+//         return res.status(400).json({msg:"Internal Server Error"})
+//     }
+// }
 
 
 module.exports = {
@@ -172,7 +175,7 @@ module.exports = {
     getAllUsersController,
     getBankDataController,
     getFD1BalanceController,
-    getFinanceLedgerRecordsController,
+    // getFinanceLedgerRecordsController,
     getFD2BalanceController,
     getAccountHistoryController
 };

@@ -10,7 +10,7 @@ const {addUserRoleController,
     getBankDataController,
     getFD1BalanceController,
     getFD2BalanceController,
-    getFinanceLedgerRecordsController,
+    // getFinanceLedgerRecordsController,
     getAccountHistoryController,
 
 } = require("../controllers/bankdata");
@@ -18,11 +18,11 @@ const {addUserRoleController,
 // router.post('/holdUser', holdUser);
 router.post('/registerUser', saveUserController);
 router.post('/loginUser',loginUserController);
-router.get('/getAllUsers',getAllUsersController);
+router.get('/getAllUsers',authenticateToken,getAllUsersController);
 router.get('/getBankData',getBankDataController);
 router.get('/getFD1Balance',getFD1BalanceController);
 router.get('/getFD2Balance',getFD2BalanceController);
-router.get('/getFinanceLedger',getFinanceLedgerRecordsController);
+// router.get('/getFinanceLedger',getFinanceLedgerRecordsController);
 router.post('/getAccountHistory',getAccountHistoryController);
 
 module.exports = router;    

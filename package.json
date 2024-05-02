@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
+
   "description": "MSSQL+node.js",
   "main": "index.js",
   "scripts": {
@@ -17,6 +18,7 @@
     "jsonwebtoken": "^9.0.2",
     "msnodesqlv8": "^4.2.1",
     "mssql": "^10.0.2",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "proxy": "http://localhost:5000"
   }
 }
