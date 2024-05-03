@@ -6,8 +6,9 @@ const {addUserRole,
     getFD1Balance,
     // getFinanceLedgerRecords,
     getFD2Balance,
-    getAccountHistory
+    getAccountHistory,
 } =require("../models/bankdata");
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {database} = require("../index");
@@ -67,19 +68,36 @@ async function saveUserController(req,res){
     }
 }
 
-async function addUserRoleController(req, res) {
-    try {
-        const { roleId, userId, roleName, createdAt } = req.body;
-        if (!roleId || !userId || !roleName || !createdAt) {
-            return res.status(400).json({ msg: "All fields are required" });
+
+async function addUserRoleController(req,res){
+    const {name,CreatedAt,emailId,pasword,userType,userToken,contactNo,roleId,roleName}=req.body
+    try{
+        if(!name ||!emailId  || !pasword  || !userType  || !contactNo || !roleId || !roleName){
+            return res.status(400).json({msg:"All fields required ",name:name,CreatedAt:CreatedAt,emailId:emailId,pasword:pasword,userType:userType,userToken:userToken,contactNo:contactNo,roleId:roleId,roleName:roleName});
         }
-        await addUserRole(userId, roleId, roleName, createdAt,res);
-        return res.status(200).json({ msg: "Success"});
-    } catch (err) {
-        console.log("Error:", err);
-        return res.status(500).json({ msg: "Internal server error" });
+        const user= await addUserRole(name,CreatedAt,emailId,pasword,userType,userToken,contactNo,roleId,roleName);
+        const token = jwt.sign({ userId: user.Id }, secretKey, { expiresIn: '1h' });
+        return res.status(201).json({msg:"Success",data:user,token:token}) 
+    }
+    catch(err){
+       console.log("error : ",err);
+       res.status(500).json({msg:"Internal server error"})
     }
 }
+
+// async function addUserRoleController(req, res) {
+//     try {
+//         const { roleId, userId, roleName, createdAt } = req.body;
+//         if (!roleId || !userId || !roleName || !createdAt) {
+//             return res.status(400).json({ msg: "All fields are required" });
+//         }
+//         await addUserRole(userId, roleId, roleName, createdAt,res);
+//         return res.status(200).json({ msg: "Success"});
+//     } catch (err) {
+//         console.log("Error:", err);
+//         return res.status(500).json({ msg: "Internal server error" });
+//     }
+// }
 
 async function loginUserController(req,res){
     try{

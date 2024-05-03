@@ -18,11 +18,12 @@ const {addUserRoleController,
 // router.post('/holdUser', holdUser);
 router.post('/registerUser', saveUserController);
 router.post('/loginUser',loginUserController);
-router.get('/getAllUsers',authenticateToken,getAllUsersController);
+router.get('/getAllUsers',getAllUsersController);
 router.get('/getBankData',getBankDataController);
 router.get('/getFD1Balance',getFD1BalanceController);
 router.get('/getFD2Balance',getFD2BalanceController);
 // router.get('/getFinanceLedger',getFinanceLedgerRecordsController);
 router.post('/getAccountHistory',getAccountHistoryController);
+router.post('/addUserRole',addUserRoleController);
 
 module.exports = router;    

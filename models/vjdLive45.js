@@ -2,6 +2,7 @@ const sql = require("mssql");
 const config2 = require("../configLive");
 
 async function getFinanceLedgerRecords() {
+  if (config2.options.instancename == "'SERVER\\SQLEXPRESS'"){
    
       try {
         const pool = await sql.connect(config2);
@@ -14,6 +15,8 @@ async function getFinanceLedgerRecords() {
         throw err;
     } 
   }
+}
+
 
 async function fetchAPI(){
   if (config2.options.instancename == "'SERVER\\SQLEXPRESS'"){

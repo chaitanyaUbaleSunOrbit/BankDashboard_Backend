@@ -3,7 +3,6 @@ const config = require("../index");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-
 async function getAllUsers() {
   if (config.options.instancename === "VJSERVER") {
     try {
@@ -65,7 +64,7 @@ async function getFD2Balance() {
 //       throw err;
 //     }
 //   }
-  
+
 // }
 
 async function getBankData() {
@@ -87,11 +86,20 @@ async function loginUser(emailId, pasword) {
   if (config.options.instancename === "VJSERVER") {
     try {
       const pool = await sql.connect(config);
-      const result = await pool
-        .request()
-        .input("emailId", sql.VarChar, emailId)
-        .input("pasword", sql.VarChar, pasword)
-        .query("SELECT * FROM Users_New WHERE emailId = @emailId");
+      const result =
+        await 
+        pool
+          .request()
+          .input("emailId", sql.VarChar, emailId)
+          .input("pasword", sql.VarChar, pasword)
+         
+        // .query("SELECT * FROM Users_New WHERE emailId = @emailId");
+        .query(`
+        SELECT Users_New.*, UserRoles_New.roleId, UserRoles_New.roleName
+        FROM Users_New
+        INNER JOIN UserRoles_New ON Users_New.Id = UserRoles_New.userId
+        WHERE Users_New.emailId = @emailId
+      `);
 
       if (result.recordset.length === 0) {
         throw new Error("User not found");
@@ -155,6 +163,128 @@ async function saveUser(
   }
 }
 
+// async function addUserRole(
+//   name,
+//   CreatedAt,
+//   emailId,
+//   pasword,
+//   userType,
+//   userToken,
+//   contactNo,
+//   roleId,
+//   roleName,
+// ) {
+//   try {
+//     // Validate required fields
+//     if (!name || !CreatedAt || !emailId || !pasword || !userType || !userToken || !contactNo || !roleId ||!roleName) {
+//       throw new Error("All fields are required");
+//     }
+
+//     const hashedpasword = await bcrypt.hash(pasword, 5);
+
+//     const pool = await sql.connect(config);
+
+//     const result = await pool
+//       .request()
+//       .input("name", name)
+//       .input("CreatedAt", CreatedAt)
+//       .input("emailId", emailId)
+//       .input("pasword", hashedpasword)
+//       .input("userType", userType)
+//       .input("userToken", userToken)
+//       .input("contactNo", contactNo)
+//       .input("roleId", roleId)
+//       .input("roleName", roleName)
+//       .query(`
+//         DECLARE @userId INT;
+//         INSERT INTO Users_New (name, CreatedAt, emailId, pasword, userType, userToken, contactNo)
+//         VALUES (@name, @CreatedAt, @emailId, @pasword, @userType, @userToken, @contactNo);
+
+//         SET @userId = SCOPE_IDENTITY();
+
+//         DECLARE @roleId INT = 1; -- Example roleId
+//         DECLARE @roleName NVARCHAR(255) = 'Standard User';
+
+//         INSERT INTO UserRoles_New (roleId, userId, roleName, CreatedAt)
+//         VALUES (@roleId, @userId, @roleName, CURRENT_TIMESTAMP);
+
+//         SELECT @userId AS userId; -- Return userId after insertion
+//       `);
+
+//     const userId = result.recordset[0].userId;
+
+//     return { success: true, message: "User added successfully", userId };
+//   } catch (err) {
+//     console.error("Error adding user:", err);
+//     throw err;
+//   }
+// }
+async function addUserRole(
+  name,
+  CreatedAt,
+  emailId,
+  pasword,
+  userType,
+  userToken,
+  contactNo,
+  roleId,
+  roleName
+) {
+  try {
+    // Validate required fields
+    if (
+      !name ||
+      !CreatedAt ||
+      !emailId ||
+      !pasword ||
+      !userType ||
+      !userToken ||
+      !contactNo ||
+      !roleId ||
+      !roleName
+    ) {
+      throw new Error("All fields including roleId and roleName are required");
+    }
+
+    const hashedpasword = await bcrypt.hash(pasword, 5);
+
+    const pool = await sql.connect(config);
+
+    const result = await pool
+      .request()
+      .input("name", name)
+      .input("CreatedAt", CreatedAt)
+      .input("emailId", emailId)
+      .input("pasword", hashedpasword)
+      .input("userType", userType)
+      .input("userToken", userToken)
+      .input("contactNo", contactNo)
+      .input("roleId", roleId)
+      .input("roleName", roleName).query(`
+        DECLARE @userId INT;
+        INSERT INTO Users_New (name, CreatedAt, emailId, pasword, userType, userToken, contactNo)
+        VALUES (@name, @CreatedAt, @emailId, @pasword, @userType, @userToken, @contactNo);
+
+        SET @userId = SCOPE_IDENTITY();
+
+        INSERT INTO UserRoles_New (roleId, userId, roleName, CreatedAt)
+        VALUES (@roleId, @userId, @roleName, CURRENT_TIMESTAMP);
+
+        SELECT @userId AS userId; -- Return userId after insertion
+      `);
+
+    // Extract the userId from the result
+    const userId = result.recordset[0].userId;
+
+    return { success: true, message: "User added successfully", userId };
+  } catch (err) {
+    console.error("Error adding user:", err);
+    throw err;
+  }
+}
+
+module.exports = { addUserRole };
+
 async function getAccountHistory(buId) {
   if (config.options.instancename === "VJSERVER") {
     try {
@@ -187,15 +317,15 @@ module.exports = {
   // getFinanceLedgerRecords,
   getFD2Balance,
   getAccountHistory,
+  addUserRole,
 };
 
-
-// async function addUserRole(userId, roleId, roleName, createdAt, res) {
+// async function addUserRole(userId, roleId, roleName, CreatedAt, res) {
 //     try {
 //         if (!userId || !roleId || !roleName || !createdAt) {
 //             return res.status(400).json({ msg: "All fields required" });
 //         }
-//         const hashedPassword = await bcrypt.hash(pasword, 10);
+//         const hashedpasword = await bcrypt.hash(pasword, 10);
 //         const pool = await sql.connect();
 //         const result = await pool.request()
 //             .input("userId", userId)

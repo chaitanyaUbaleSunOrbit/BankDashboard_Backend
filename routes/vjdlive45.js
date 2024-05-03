@@ -5,4 +5,4 @@ const  {getFinanceLedgerRecordsController,fetchAPIController} =require("../contr
 router.get("/getFinanceLedgerRecords",getFinanceLedgerRecordsController);
 router.get("/fetchApi",fetchAPIController);
 
-module.exports = router;    
+module.exports = router;   
