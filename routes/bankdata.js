@@ -12,6 +12,7 @@ const {addUserRoleController,
     getFD2BalanceController,
     // getFinanceLedgerRecordsController,
     getAccountHistoryController,
+    addHoldRequestController,
 
 } = require("../controllers/bankdata");
 
@@ -25,5 +26,6 @@ router.get('/getFD2Balance',getFD2BalanceController);
 // router.get('/getFinanceLedger',getFinanceLedgerRecordsController);
 router.post('/getAccountHistory',getAccountHistoryController);
 router.post('/addUserRole',addUserRoleController);
+router.post('/addHoldRequest',addHoldRequestController);
 
 module.exports = router;    

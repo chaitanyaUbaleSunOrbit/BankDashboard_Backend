@@ -7,6 +7,7 @@ const {addUserRole,
     // getFinanceLedgerRecords,
     getFD2Balance,
     getAccountHistory,
+    addHoldRequest,
 } =require("../models/bankdata");
 
 const bcrypt = require('bcrypt');
@@ -30,6 +31,8 @@ async function getAllUsersController(req,res) {
         res.status(401).json({msg:"Internal Server Error"})
     }
 }
+
+
 
 async function getBankDataController(req,res) {
     try{
@@ -65,6 +68,22 @@ async function saveUserController(req,res){
     catch(err){
         console.log("error : ",err);
         res.status(500).json({msg:"internal server error"})
+    }
+}
+
+async function addHoldRequestController(req,res){
+    try{
+      const{Bu_Name,Account_No,Account_Type,LedgerId,Amount,Hold_Description,Hold_UserId}=req.body;
+      if(!Bu_Name||!Account_No||!Account_Type){
+         console.log("All fields are reqired");
+         res.status(400).json({msg:"All fields are required"})
+      }
+      const result = await addHoldRequest(Bu_Name,Account_No,Account_Type,LedgerId,Amount,Hold_Description,Hold_UserId)
+      return res.status(201).json({msg:"hold req added successfully",data:result})      
+    }
+    catch(err){
+        console.log("error :" ,err);
+        res.status(400).json({msg:"Internal server error"})
     }
 }
 
@@ -183,5 +202,6 @@ module.exports = {
     getFD1BalanceController,
     // getFinanceLedgerRecordsController,
     getFD2BalanceController,
-    getAccountHistoryController
+    getAccountHistoryController,
+    addHoldRequestController,
 };

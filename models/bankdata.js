@@ -231,6 +231,52 @@ async function addUserRole(
 
 module.exports = { addUserRole };
 
+
+async function addHoldRequest(
+  Bu_Name,
+  Account_No,
+  Account_Type,
+  LedgerId,
+  Amount,
+  Hold_Description,
+  Hold_UserId
+){
+  if(!Bu_Name ||
+     !Account_No ||
+     !Account_Type
+    ){
+      console.log("All fields are required ")
+     }  
+  try{
+    const pool = await sql.connect(config);
+
+    const result = await pool.request()
+      .input("Bu_Name",Bu_Name)
+      .input("Account_No",Account_No)
+      .input("Account_Type",Account_Type)
+      // .input("BuWiseBankMappingId",BuWiseBankMappingId)
+      .input("LedgerId",LedgerId)
+      .input("Amount",Amount)
+      .input("Hold_Description",Hold_Description)
+      // .input("CreatedDate",CreatedDate)
+      // .input("Hold_At",Hold_At)
+      .input("Hold_UserId",Hold_UserId)
+      .query(
+        `
+        INSERT INTO HoldReleaseDetails_New (Bu_Name, Account_No, Account_Type, BuWiseBankMappingId, Amount, Hold_Description, CreatedDate, Hold_At, Hold_UserId, LedgerId) values (@Bu_Name, @Account_No, @Account_Type, 
+            (SELECT Id FROM BuWiseBankMapping WHERE LedgerId = @LedgerId), @Amount, @Hold_Description, GETDATE(), GETDATE(), @Hold_UserId, @LedgerId)
+        `
+      )
+       const data=result.recordset;
+       return { success: true, message: " success", data:data };
+
+  }
+  catch(err){
+    throw(err)
+  }
+}
+
+
 async function getAccountHistory(buId) {
   if (config.options.instancename === "VJSERVER") {
     try {
@@ -254,6 +300,8 @@ async function getAccountHistory(buId) {
   }
 }
 
+
+
 module.exports = {
   saveUser,
   loginUser,
@@ -264,32 +312,7 @@ module.exports = {
   getFD2Balance,
   getAccountHistory,
   addUserRole,
+  addHoldRequest,
 };
 
-// async function addUserRole(userId, roleId, roleName, CreatedAt, res) {
-//     try {
-//         if (!userId || !roleId || !roleName || !createdAt) {
-//             return res.status(400).json({ msg: "All fields required" });
-//         }
-//         const hashedpasword = await bcrypt.hash(pasword, 10);
-//         const pool = await sql.connect();
-//         const result = await pool.request()
-//             .input("userId", userId)
-//             .input("roleId", roleId)
-//             .input("roleName", roleName)
-//             .input("createdAt", createdAt)
-//             .query("INSERT INTO dbo.UserRoles_New (userId, roleId, roleName, createdAt) VALUES (@userId, @roleId, @roleName, @createdAt)");
 
-//             const userData = { pasword };
-//             const accessToken = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: '1h' });
-//         return res.status(201).json({
-//             success: true,
-//             message: "User role added successfully",
-//             result,
-//             accessToken
-//         });
-//     } catch (error) {
-//         console.log("err:", error);
-//         return res.status(500).json({ msg: "Internal server error" });
-//     }
-// }
