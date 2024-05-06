@@ -18,7 +18,7 @@ const {addUserRoleController,
 // router.post('/holdUser', holdUser);
 router.post('/registerUser', saveUserController);
 router.post('/loginUser',loginUserController);
-router.get('/getAllUsers',getAllUsersController);
+router.get('/getAllUsers',authenticateToken,getAllUsersController);
 router.get('/getBankData',getBankDataController);
 router.get('/getFD1Balance',getFD1BalanceController);
 router.get('/getFD2Balance',getFD2BalanceController);

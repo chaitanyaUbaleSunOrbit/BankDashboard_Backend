@@ -126,7 +126,7 @@ async function saveUser(
   userType,
   userToken,
   contactNo,
-  res
+
 ) {
   if (config.options.instancename === "VJSERVER") {
     try {
@@ -137,15 +137,14 @@ async function saveUser(
         !pasword ||
         !userType ||
         !userToken ||
-        !contactNo
+        !contactNo 
       ) {
-        return res.status(400).json({ msg: "All fields required" });
+        console.log("All fields are required ");
       }
       const hashedPasword = await bcrypt.hash(pasword, 5);
       const pool = await sql.connect(config);
       const result = await pool
         .request()
-        // .input("Id", Id)
         .input("name", name)
         .input("CreatedAt", CreatedAt)
         .input("emailId", emailId)
@@ -153,7 +152,7 @@ async function saveUser(
         .input("userType", userType)
         .input("userToken", userToken)
         .input("contactNo", contactNo)
-        .query(`INSERT INTO Users_New ( name, CreatedAt, emailId, pasword, userType, userToken, contactNo)
+        .query(`INSERT INTO Users_New ( name, CreatedAt, emailId, pasword, userType, userToken, contactNo )
              VALUES ( @name, @CreatedAt, @emailId, @pasword, @userType, @userToken, @contactNo)`);
 
       return { success: true, message: "User  added successfully", result };
@@ -163,62 +162,7 @@ async function saveUser(
   }
 }
 
-// async function addUserRole(
-//   name,
-//   CreatedAt,
-//   emailId,
-//   pasword,
-//   userType,
-//   userToken,
-//   contactNo,
-//   roleId,
-//   roleName,
-// ) {
-//   try {
-//     // Validate required fields
-//     if (!name || !CreatedAt || !emailId || !pasword || !userType || !userToken || !contactNo || !roleId ||!roleName) {
-//       throw new Error("All fields are required");
-//     }
 
-//     const hashedpasword = await bcrypt.hash(pasword, 5);
-
-//     const pool = await sql.connect(config);
-
-//     const result = await pool
-//       .request()
-//       .input("name", name)
-//       .input("CreatedAt", CreatedAt)
-//       .input("emailId", emailId)
-//       .input("pasword", hashedpasword)
-//       .input("userType", userType)
-//       .input("userToken", userToken)
-//       .input("contactNo", contactNo)
-//       .input("roleId", roleId)
-//       .input("roleName", roleName)
-//       .query(`
-//         DECLARE @userId INT;
-//         INSERT INTO Users_New (name, CreatedAt, emailId, pasword, userType, userToken, contactNo)
-//         VALUES (@name, @CreatedAt, @emailId, @pasword, @userType, @userToken, @contactNo);
-
-//         SET @userId = SCOPE_IDENTITY();
-
-//         DECLARE @roleId INT = 1; -- Example roleId
-//         DECLARE @roleName NVARCHAR(255) = 'Standard User';
-
-//         INSERT INTO UserRoles_New (roleId, userId, roleName, CreatedAt)
-//         VALUES (@roleId, @userId, @roleName, CURRENT_TIMESTAMP);
-
-//         SELECT @userId AS userId; -- Return userId after insertion
-//       `);
-
-//     const userId = result.recordset[0].userId;
-
-//     return { success: true, message: "User added successfully", userId };
-//   } catch (err) {
-//     console.error("Error adding user:", err);
-//     throw err;
-//   }
-// }
 async function addUserRole(
   name,
   CreatedAt,
@@ -228,10 +172,11 @@ async function addUserRole(
   userToken,
   contactNo,
   roleId,
-  roleName
+  roleName,
+  isApproved
 ) {
   try {
-    // Validate required fields
+
     if (
       !name ||
       !CreatedAt ||
@@ -259,16 +204,17 @@ async function addUserRole(
       .input("userType", userType)
       .input("userToken", userToken)
       .input("contactNo", contactNo)
+      .input("isApproved", isApproved)
       .input("roleId", roleId)
       .input("roleName", roleName).query(`
         DECLARE @userId INT;
-        INSERT INTO Users_New (name, CreatedAt, emailId, pasword, userType, userToken, contactNo)
-        VALUES (@name, @CreatedAt, @emailId, @pasword, @userType, @userToken, @contactNo);
+        INSERT INTO Users_New (name, CreatedAt, emailId, pasword, userType, userToken, contactNo,isApproved)
+        VALUES (@name, @CreatedAt, @emailId, @pasword, @userType, @userToken, @contactNo,@isApproved);
 
         SET @userId = SCOPE_IDENTITY();
 
-        INSERT INTO UserRoles_New (roleId, userId, roleName, CreatedAt)
-        VALUES (@roleId, @userId, @roleName, CURRENT_TIMESTAMP);
+        INSERT INTO UserRoles_New (roleId, userId, roleName, CreatedAt,isApproved)
+        VALUES (@roleId, @userId, @roleName, CURRENT_TIMESTAMP,@isApproved);
 
         SELECT @userId AS userId; -- Return userId after insertion
       `);

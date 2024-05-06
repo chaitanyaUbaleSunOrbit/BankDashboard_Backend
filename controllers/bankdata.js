@@ -54,7 +54,7 @@ async function saveUserController(req,res){
         // ) 
               
         const {name,CreatedAt,emailId,pasword,userType,userToken,contactNo}=req.body
-        if(!name ||!CreatedAt ||!emailId  || !pasword  || !userType || !userToken || !contactNo){
+        if(!name ||!CreatedAt ||!emailId  || !pasword  || !userType || !userToken || !contactNo ){
             return res.status(400).json({msg:"All fields required"});
         }
         const user= await saveUser(name,CreatedAt,emailId,pasword,userType,userToken,contactNo);
@@ -70,12 +70,12 @@ async function saveUserController(req,res){
 
 
 async function addUserRoleController(req,res){
-    const {name,CreatedAt,emailId,pasword,userType,userToken,contactNo,roleId,roleName}=req.body
+    const {name,CreatedAt,emailId,pasword,userType,userToken,contactNo,roleId,roleName,isApproved}=req.body
     try{
-        if(!name ||!emailId  || !pasword  || !userType  || !contactNo || !roleId || !roleName){
-            return res.status(400).json({msg:"All fields required ",name:name,CreatedAt:CreatedAt,emailId:emailId,pasword:pasword,userType:userType,userToken:userToken,contactNo:contactNo,roleId:roleId,roleName:roleName});
+        if(!name ||!emailId  || !pasword  || !userType  || !contactNo || !roleId || !roleName || !isApproved){
+            return res.status(400).json({msg:"All fields required ",name:name,CreatedAt:CreatedAt,emailId:emailId,pasword:pasword,userType:userType,userToken:userToken,contactNo:contactNo,roleId:roleId,roleName:roleName,isApproved:isApproved});
         }
-        const user= await addUserRole(name,CreatedAt,emailId,pasword,userType,userToken,contactNo,roleId,roleName);
+        const user= await addUserRole(name,CreatedAt,emailId,pasword,userType,userToken,contactNo,roleId,roleName,isApproved);
         const token = jwt.sign({ userId: user.Id }, secretKey, { expiresIn: '1h' });
         return res.status(201).json({msg:"Success",data:user,token:token}) 
     }
@@ -85,19 +85,7 @@ async function addUserRoleController(req,res){
     }
 }
 
-// async function addUserRoleController(req, res) {
-//     try {
-//         const { roleId, userId, roleName, createdAt } = req.body;
-//         if (!roleId || !userId || !roleName || !createdAt) {
-//             return res.status(400).json({ msg: "All fields are required" });
-//         }
-//         await addUserRole(userId, roleId, roleName, createdAt,res);
-//         return res.status(200).json({ msg: "Success"});
-//     } catch (err) {
-//         console.log("Error:", err);
-//         return res.status(500).json({ msg: "Internal server error" });
-//     }
-// }
+
 
 async function loginUserController(req,res){
     try{
@@ -197,19 +185,3 @@ module.exports = {
     getFD2BalanceController,
     getAccountHistoryController
 };
-
-// async function holdUser(req,res){         //// Correction Needed
-//     try{
-//           const {userId}=req.body;
-//           if(!userId){
-//             return res.status(400).json({message: "uid required"})
-
-//           }
-//           await addUserHold(userId);
-//           return(res.status(200).json({message:"success"}))
-//     }     
-//     catch(error){
-//         console.log("error :",error);
-//         return res.status(500).json({msg:"Server error"})
-//     }
-// }
